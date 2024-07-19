@@ -11,13 +11,22 @@ check_success() {
     fi
 }
 
-# Add user
-adduser $USERNAME
-check_success "adduser $USERNAME"
+# Function to check if a user exists
+user_exists() {
+    id "$1" &>/dev/null
+}
 
-# Set password for user
-echo "swiftaucular" | passwd $USERNAME --stdin
-check_success "setting password for user $USERNAME"
+# Add user if it doesn't exist
+if user_exists $USERNAME; then
+    echo "User $USERNAME already exists."
+else
+    adduser $USERNAME
+    check_success "adduser $USERNAME"
+
+    # Set password for user
+    echo "swiftaucular" | passwd $USERNAME --stdin
+    check_success "setting password for user $USERNAME"
+fi
 
 # Install necessary packages
 yum install -y yum-utils \
