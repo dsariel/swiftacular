@@ -30,15 +30,16 @@ fi
 
 # Install necessary packages
 yum install -y yum-utils \
+               libvirt \
                libvirt-devel \
+               qemu-kvm \
                pcp-devel \
                pcp-system-tools \
-               qemu-kvm \
-               libvirt \
-               ruby-devel \
-               libxslt-devel \
                libxml2-devel \
-               zlib-devel
+               libxslt-devel \
+               zlib-devel \
+               ruby-devel \
+               rsync
 check_success "yum install packages"
 
 # Add HashiCorp repository and install Vagrant
