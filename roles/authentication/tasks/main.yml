@@ -4,24 +4,24 @@
 # Install and configure a keystone authentication server
 #
 
-- include: debian.yml
+- include_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'
 
 #
 # Common
 #
 
-- include: common.yml
+- include_tasks: common.yml
 
 #
 # Tests
 # 
 
-- include: debian_test.yml
+- include_tasks: debian_test.yml
   when: ansible_os_family == 'Debian'
 
-- include: redhat_test.yml
+- include_tasks: redhat_test.yml
   when: ansible_os_family == 'RedHat'

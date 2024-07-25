@@ -5,12 +5,12 @@
   gather_facts: yes
   tasks:
   - name: sudo yum update && upgrade
-    shell: | 
-      yum update -y 
+    shell: |
+      yum update -y
       yum upgrade -y
   - name: install libselinux-python
-    command: yum install -y python3-libselinux 
-#  - name: set selinux to pemissive 
+    command: yum install -y python3-libselinux
+#  - name: set selinux to pemissive
 #    selinux:
 #      policy: targeted
 #      state: permissive
@@ -29,7 +29,7 @@
   roles:
   - package_cache
 
-- hosts: 
+- hosts:
   - all
   roles:
   - common
@@ -102,21 +102,21 @@
 #
 # These are not so much roles as starting services
 # though also includes distributing the ring files.
-# 
+#
 
-- hosts: 
+- hosts:
   - proxy
 #  vars_file:
-#  - include: vars/{{ansible_os_family}}.yml
+#  - include_tasks: vars/{{ansible_os_family}}.yml
   tasks:
-  - include: start_proxy.yml
+  - include_tasks: start_proxy.yml
 
 - hosts:
   - storage
 #  vars_file:
-#  - include: vars/{{ansible_os_family}}.yml
+#  - include_tasks: vars/{{ansible_os_family}}.yml
   tasks:
-  - include: start_storage.yml
+  - include_tasks: start_storage.yml
 
 - hosts:
   - all
@@ -131,4 +131,4 @@
 # Probably best to run these on their own?
 #
 
-#- include: tests/tests.yml
+#- include_tasks: tests/tests.yml

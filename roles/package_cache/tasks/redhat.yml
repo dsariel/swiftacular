@@ -1,5 +1,5 @@
 ---
 
-- include: redhat_install.yml
-- include: redhat_configure.yml
-- include: redhat_service.yml
+- include_tasks: redhat_install.yml
+- include_tasks: redhat_configure.yml
+- include_tasks: redhat_service.yml

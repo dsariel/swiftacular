@@ -4,15 +4,15 @@
 # Debian
 #
 
-- include: debian.yml
+- include_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
 #
 # Redhat
 #
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'
 
 
-- include: common.yml
+- include_tasks: common.yml

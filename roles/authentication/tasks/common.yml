@@ -66,7 +66,7 @@
 #- name: restart debian keystone
 #  service: name=keystone state=restarted
 #  when: keystone.changed and ansible_os_family == 'Debian'
-  
+
 #- name: restart redhat keystone
 #  service: name=openstack-keystone state=restarted
 #  when: keystone.changed and ansible_os_family == 'RedHat'
@@ -83,7 +83,7 @@
 - name: Initialize Fernet key repositories
   shell: |
     keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
-    keystone-manage credential_setup --keystone-user keystone --keystone-group keystone 
+    keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
 
 - name: Bootstrap the Identity service
   command: keystone-manage bootstrap --bootstrap-password {{ keystone_admin_token }} --bootstrap-admin-url http://{{ keystone_server }}:5000/v3/ --bootstrap-internal-url http://{{ keystone_server }}:5000/v3/ --bootstrap-public-url http://{{ keystone_server }}:5000/v3/ --bootstrap-region-id RegionOne
@@ -130,10 +130,10 @@
 
 - name: Set up basic users
   shell: |
-    /usr/local/bin/openstack user create --project service --password {{ keystone_generic_service_password }} swift
-    /usr/local/bin/openstack user create --project demo --password {{ keystone_test_user_password }} {{ keystone_test_user }}
+    /usr/local/bin/openstack user create --project service --password {{ keystone_generic_service_password }} --domain Default swift
+    /usr/local/bin/openstack user create --project demo --password {{ keystone_test_user_password }} --domain Default {{ keystone_test_user }}
   environment: "{{ admin_env }}"
-  ignore_errors: true
+# ignore_errors: true
 
 - name: Set up basic roles
   shell: |
@@ -141,7 +141,7 @@
     /usr/local/bin/openstack role create swiftoperator
     /usr/local/bin/openstack role add --project demo --user {{ keystone_test_user }} swiftoperator
   environment: "{{ admin_env }}"
-  ignore_errors: true
+#  ignore_errors: true
 
 #
 # Keystone endpoints

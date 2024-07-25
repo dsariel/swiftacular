@@ -1,5 +1,5 @@
 ---
 
-- include: debian_install.yml
-- include: debian_configure.yml
-- include: debian_service.yml
+- include_tasks: debian_install.yml
+- include_tasks: debian_configure.yml
+- include_tasks: debian_service.yml
