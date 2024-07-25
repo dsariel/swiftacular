@@ -10,21 +10,23 @@ nodes = {
 }
 
 Vagrant.configure("2") do |config|
-    #config.vm.box = "trusty64"
-    #config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
-    #config.vm.box = "centos65"
-    #config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box"
-    # config.vm.box = "precise64"
-    # config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    config.vm.provider :libvirt do |libvirt|
+      libvirt.qemu_use_session = false
+      # if the above doesn't work, try uncommenting the following instead
+      #libvirt.uri = 'qemu:///system'
+    end
+end
+
+Vagrant.configure("2") do |config|
     config.vm.box = "eurolinux-vagrant/centos-stream-9"
-    config.vm.box_url = "https://app.vagrantup.com/eurolinux-vagrant/boxes/centos-stream-9/versions/9.0.28/providers/virtualbox.box"
+    config.vm.box_url = "https://app.vagrantup.com/eurolinux-vagrant/boxes/centos-stream-9/versions/9.0.28/providers/libvirt.box"
 
     nodes.each do |prefix, (count, ip_start)|
         count.times do |i|
             hostname = "%s-%02d" % [prefix, (i+1)]
 
-            config.vm.provider :virtualbox do |v|
-                v.customize ["modifyvm", :id, "--memory", 512]
+            config.vm.provider :libvirt do |v|
+                v.memory = 512
             end
 
             config.vm.define "#{hostname}" do |box|

@@ -29,6 +29,9 @@
 #     /usr/bin/rhos-release {{ rhos_release }}
 #  when: ansible_os_family == 'RedHat'
 
+- name: install pip
+  command: yum install -y python3-pip
+  
 - name: Install Openstack packages
   shell: |
     sudo yum install -y centos-release-openstack-zed openstack-selinux;

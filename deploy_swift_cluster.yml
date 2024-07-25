@@ -38,11 +38,11 @@
   tasks:
   - name: redirection ansible_ethN
     set_fact:
-      ansible_eth1: "{{ ansible_enp0s8 }}"
-      ansible_eth2: "{{ ansible_enp0s9 }}"
-      ansible_eth3: "{{ ansible_enp0s10 }}"
-      ansible_eth4: "{{ ansible_enp0s16 }}"
- 
+      ansible_eth1: "{{ ansible_ens6 }}"
+      ansible_eth2: "{{ ansible_ens7 }}"
+      ansible_eth3: "{{ ansible_ens8 }}"
+      ansible_eth4: "{{ ansible_ens9 }}"
+
 # - hosts:
 #   - lbssl
 #   roles:
@@ -59,22 +59,22 @@
   tasks:
   - name: redirection ansible_ethN twice
     set_fact:
-      ansible_eth1: "{{ ansible_enp0s8 }}"
-      ansible_eth2: "{{ ansible_enp0s9 }}"
-      ansible_eth3: "{{ ansible_enp0s10 }}"
-      ansible_eth4: "{{ ansible_enp0s16 }}"
- 
-- hosts: 
+      ansible_eth1: "{{ ansible_ens6 }}"
+      ansible_eth2: "{{ ansible_ens7 }}"
+      ansible_eth3: "{{ ansible_ens8 }}"
+      ansible_eth4: "{{ ansible_ens9 }}"
+
+- hosts:
     - swiftclient
   roles:
     - swiftclient
 
-- hosts: 
+- hosts:
    - authentication
   roles:
    - authentication
 
-- hosts: 
+- hosts:
   - proxy
   roles:
   - proxy
@@ -88,11 +88,11 @@
   tasks:
   - name: redirection ansible_ethN again
     set_fact:
-      ansible_eth1: "{{ ansible_enp0s8 }}"
-      ansible_eth2: "{{ ansible_enp0s9 }}"
-      ansible_eth3: "{{ ansible_enp0s10 }}"
-      ansible_eth4: "{{ ansible_enp0s16 }}"
- 
+      ansible_eth1: "{{ ansible_ens6 }}"
+      ansible_eth2: "{{ ansible_ens7 }}"
+      ansible_eth3: "{{ ansible_ens8 }}"
+      ansible_eth4: "{{ ansible_ens9 }}"
+
 - hosts:
   - storage
   serial: 1
