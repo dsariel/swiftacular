@@ -8,3 +8,4 @@ tmp
 fetch
 library/test-modules
 library/openstack
+library/ansible_collections

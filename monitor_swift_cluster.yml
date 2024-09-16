@@ -1,0 +1,15 @@
+---
+- name: Setup monitoring on storage and proxy hosts
+  hosts: storage,proxy
+  roles:
+    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_rest_api: true
+        pcp_pmlogger_interval: 30
+
+- name: Setup Grafana
+  hosts: grafana
+  roles:
+    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.grafana
