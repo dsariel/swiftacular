@@ -13,3 +13,38 @@
   roles:
     - role: performancecopilot.metrics.redis
     - role: performancecopilot.metrics.grafana
+
+- name: Add echarts to Grafana
+  hosts: grafana
+  tasks:
+    - name: install echarts
+      command: sudo grafana-cli plugins install volkovlabs-echarts-panel
+    - name: install echarts
+      command: sudo systemctl restart grafana-server
+
+- name: Setup configure grafana python script
+  hosts: grafana,storage,proxy
+  tasks:
+    - name: install pip
+      command: yum install -y python3-pip python3-devel
+    - name:  pip install grafana
+      command: pip install grafana-client
+
+
+
+- name: Add PCP Redis datasource to Grafana
+  hosts: grafana
+  tasks:
+    - name: Run the configure_grafana.py script
+      script: monitoring/grafana/configure_grafana.py  delete-default-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin
+      args:
+        executable: python3
+
+
+- name: Add PCP Redis datasource to Grafana
+  hosts: storage,proxy
+  tasks:
+    - name: Run the configure_grafana.py script
+      script: monitoring/grafana/configure_grafana.py  create-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin {{ inventory_hostname }} {{ ansible_host }}
+      args:
+        executable: python3
