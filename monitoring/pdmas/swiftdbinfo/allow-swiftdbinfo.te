@@ -1,0 +1,13 @@
+
+module allow-swiftdbinfo 1.0;
+
+require {
+        type pcp_pmcd_t;
+        type swift_data_t;
+        type unlabeled_t;
+        class file write;
+}
+
+#============= pcp_pmcd_t ==============
+allow pcp_pmcd_t swift_data_t:file write;
+allow pcp_pmcd_t unlabeled_t:file write;
