@@ -52,10 +52,6 @@ check_success "yum install vagrant"
 yum -y groupinstall "Development tools"
 check_success "yum groupinstall Development tools"
 
-# Install Vagrant plugin
-vagrant plugin install vagrant-libvirt
-check_success "vagrant plugin install vagrant-libvirt"
-
 # Download eurolinux-vagrant/centos-stream-9 (no need in sudo permissions)
 vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt
 check_success "vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt"

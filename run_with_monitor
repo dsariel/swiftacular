@@ -36,6 +36,8 @@ run_playbook() {
   done
 }
 
+# Install Vagrant plugin
+vagrant plugin install vagrant-libvirt
 
 # Run the playbooks with timing and logging
 echo start
