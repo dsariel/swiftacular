@@ -1,0 +1,89 @@
+---
+- name: Setup monitoring on storage and proxy hosts
+  hosts: storage,proxy
+  roles:
+    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_rest_api: true
+        pcp_pmlogger_interval: 30
+
+- name: Setup storage and proxy hosts so they support custom pcp pdmas
+  hosts: storage, proxy
+  tasks:
+    - name: yum update
+      command: sudo yum install -y centos-release-openstack-zed
+    - name: install pip
+      command: sudo yum install -y python3-pip python3-devel pcp-devel liberasurecode-devel
+
+- name: Setup swiftdbinfo pmda on storage hosts
+  hosts: storage
+  tasks:
+    - name: Copy pdma to host
+      copy:
+        src: monitoring/pdmas/swiftdbinfo/
+        dest: /var/lib/pcp/pmdas/swiftdbinfo/
+        mode: u=rwx,g=rwx,o=rwx
+    - name: change ownership pf pdma
+      command: sudo chown $USER /var/lib/pcp/pmdas/swiftdbinfo
+    - name: Install PDMA
+      shell: |
+            cd /var/lib/pcp/pmdas/swiftdbinfo
+            sudo ./Install
+    - name: Enable and configure perssitant logging for custom pdma
+      shell: |
+            sudo sed -i '/\[access\]/i\
+            log mandatory on every 60 seconds {\
+            swiftdbinfo.size\
+            swiftdbinfo.object.count\
+            swiftdbinfo.object.dist\
+            }
+
+            ' /var/lib/pcp/config/pmlogger/config.default
+
+- name: Restart pmlogger to finsh PDMAS setup
+  hosts: storage, proxy
+  tasks:
+    - name: Restart pmlogger
+      command: sudo systemctl restart pmlogger
+
+- name: Setup Grafana
+  hosts: grafana
+  roles:
+    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.grafana
+
+- name: Add echarts to Grafana
+  hosts: grafana
+  tasks:
+    - name: install echarts
+      command: sudo grafana-cli plugins install volkovlabs-echarts-panel
+    - name: install echarts
+      command: sudo systemctl restart grafana-server
+
+- name: Setup configure grafana python script
+  hosts: grafana,storage,proxy
+  tasks:
+    - name: install pip
+      command: yum install -y python3-pip python3-devel
+    - name:  pip install grafana
+      command: pip install grafana-client
+
+
+
+- name: Add PCP Redis datasource to Grafana
+  hosts: grafana
+  tasks:
+    - name: Run the configure_grafana.py script
+      script: monitoring/grafana/configure_grafana.py  delete-default-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin
+      args:
+        executable: python3
+
+
+- name: Add PCP Redis datasource to Grafana
+  hosts: storage,proxy
+  tasks:
+    - name: Run the configure_grafana.py script
+      script: monitoring/grafana/configure_grafana.py  create-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin {{ inventory_hostname }} {{ ansible_host }}
+      args:
+        executable: python3

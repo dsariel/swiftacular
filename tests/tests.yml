@@ -6,8 +6,8 @@
 
 - hosts: swiftclient
   tasks:
-  - include: swiftclient.yml
+  - include_tasks: swiftclient.yml
 
 #- hosts: gauntlt
 #  tasks:
-#  - include: gauntlt.yml
+#  - include_tasks: gauntlt.yml

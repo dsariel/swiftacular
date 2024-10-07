@@ -12,17 +12,17 @@
 # NTP
 # 
 
-- include: debian_ntp.yml
+- include_tasks: debian_ntp.yml
 
 #
 # Package cache
 #
 
-- include: debian_package_cache.yml
+- include_tasks: debian_package_cache.yml
 
 #
 # Havana repository
 # 
 
-- include: debian_openstack_repository.yml
+- include_tasks: debian_openstack_repository.yml
 
