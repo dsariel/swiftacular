@@ -57,6 +57,10 @@ check_success "yum groupinstall Development tools"
 vagrant plugin install vagrant-libvirt
 check_success "vagrant plugin install vagrant-libvirt"
 
+# Download eurolinux-vagrant/centos-stream-9
+vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt
+check_success "vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt"
+
 # Enable and start PCP services
 systemctl enable pmcd
 check_success "systemctl enable pmcd"
