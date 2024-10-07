@@ -30,7 +30,6 @@ fi
 
 # Install necessary packages
 yum install -y yum-utils \
-               libvirt \
                libvirt-devel \
                qemu-kvm \
                pcp-devel \
