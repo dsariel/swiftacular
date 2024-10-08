@@ -40,7 +40,7 @@ run_playbook() {
 vagrant plugin install vagrant-libvirt
 
 # Download eurolinux-vagrant/centos-stream-9
-vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt
+vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt --force
 
 # Run the playbooks with timing and logging
 echo start
