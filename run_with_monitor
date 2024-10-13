@@ -36,11 +36,22 @@ run_playbook() {
   done
 }
 
-# Install Vagrant plugin
-vagrant plugin install vagrant-libvirt
+# Check if vagrant-libvirt plugin is installed
+if ! vagrant plugin list | grep -q 'vagrant-libvirt'; then
+    echo "Installing vagrant-libvirt plugin..."
+    vagrant plugin install vagrant-libvirt
+else
+    echo "vagrant-libvirt plugin is already installed."
+fi
 
-# Download eurolinux-vagrant/centos-stream-9
-vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt --force
+# Check if the box 'eurolinux-vagrant/centos-stream-9' is already added
+if ! vagrant box list | grep -q 'eurolinux-vagrant/centos-stream-9'; then
+    echo "Adding the 'eurolinux-vagrant/centos-stream-9' box..."
+    vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt
+else
+    echo "'eurolinux-vagrant/centos-stream-9' box is already added."
+fi
+
 
 # Run the playbooks with timing and logging
 echo start
