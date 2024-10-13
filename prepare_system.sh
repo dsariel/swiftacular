@@ -76,5 +76,11 @@ check_success "systemctl enable libvirtd"
 usermod -a -G libvirt $USERNAME
 check_success "usermod -a -G libvirt $USERNAME"
 
+# Install grafana-client
+pip install grafana-client
+
+# Install golang-github-jsonnet-bundler
+dnf install -y golang-github-jsonnet-bundler
+
 echo "System preparation completed successfully."
 
