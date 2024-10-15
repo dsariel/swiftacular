@@ -65,5 +65,8 @@ for dashboard in "${!dashboards[@]}"; do
   echo "Grafana Dashboard for ${dashboard}: http://${grafana_ip}:3000/d/${uid}/"
 done
 
+# Deploy Swift Cluster
+cp group_vars/all.example group_vars/all
 run_playbook "deploy_swift_cluster.yml" "Deploy Swift Cluster"
+
 run_playbook "setup_workload_test.yml" "Setup Workload Test"
