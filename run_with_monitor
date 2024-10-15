@@ -58,6 +58,9 @@ echo start
 vagrant up
 ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts monitor_swift_cluster.yml
 
+# Install jsonnet on localhost
+ansible-playbook -i 'localhost,' -c local jsonnet_install.yml
+
 # Iterate over dashboard pairs and create each dashboard
 for dashboard in "${!dashboards[@]}"; do
   uid=${dashboards[$dashboard]}

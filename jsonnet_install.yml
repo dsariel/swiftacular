@@ -1,0 +1,31 @@
+---
+- name: Install jsonnet from source for a regular user
+  hosts: localhost
+  become: no
+  gather_facts: no
+  tasks:
+    - name: Clone jsonnet repository from GitHub into user's home directory
+      git:
+        repo: "https://github.com/google/jsonnet.git"
+        dest: "{{ lookup('env', 'HOME') }}/jsonnet"
+        update: yes
+
+    - name: Build jsonnet using make (non-root user)
+      make:
+        chdir: "{{ lookup('env', 'HOME') }}/jsonnet"
+
+    - name: Add jsonnet to the user's local bin directory
+      copy:
+        src: "{{ lookup('env', 'HOME') }}/jsonnet/jsonnet"
+        dest: "{{ lookup('env', 'HOME') }}/.local/bin/jsonnet"
+        mode: '0755'
+
+    - name: Ensure ~/.local/bin is in the user's PATH
+      lineinfile:
+        path: "{{ lookup('env', 'HOME') }}/.bashrc"
+        line: 'export PATH=$PATH:{{ lookup("env", "HOME") }}/.local/bin'
+        state: present
+        regexp: '^export PATH=.*'
+
+    - name: Install jsonnet packages from jsonnetfile.json
+      shell: jb install
