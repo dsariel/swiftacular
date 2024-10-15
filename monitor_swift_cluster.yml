@@ -97,6 +97,9 @@
         state: present
         regexp: '^export PATH=.*'
 
+    - name: Install jsonnet packages from jsonnetfile.json
+      shell: jb install
+
 - name: Add PCP Redis datasource to Grafana
   hosts: grafana
   tasks:
