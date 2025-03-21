@@ -83,4 +83,3 @@ pip install grafana-client
 dnf install -y golang-github-jsonnet-bundler
 
 echo "System preparation completed successfully."
-
