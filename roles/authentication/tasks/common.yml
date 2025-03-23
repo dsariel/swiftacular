@@ -41,8 +41,10 @@
   notify:
     - restart keystone
 
-- name: create keystone database
-  mysql_db: name=keystone state=present
+- name: Create keystone database
+  community.mysql.mysql_db:
+    name: keystone
+    state: present
   register: keystone
 #- name: create keystone database
 #  command: echo "create database keystone" | mysql -u root
