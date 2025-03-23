@@ -52,6 +52,8 @@ else
     echo "'eurolinux-vagrant/centos-stream-9' box is already added."
 fi
 
+# install community.general module
+ansible-galaxy collection install community.general
 
 # Run the playbooks with timing and logging
 echo start

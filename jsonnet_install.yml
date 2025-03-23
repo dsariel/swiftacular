@@ -11,7 +11,7 @@
         update: yes
 
     - name: Build jsonnet using make (non-root user)
-      make:
+      community.general.make:
         chdir: "{{ lookup('env', 'HOME') }}/jsonnet"
 
     - name: Add jsonnet to the user's local bin directory
