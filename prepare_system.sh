@@ -87,4 +87,10 @@ pip install grafana-client
 # Install golang-github-jsonnet-bundler
 dnf install -y golang-github-jsonnet-bundler
 
+# Add eurolinux-vagrant/centos-stream-9
+# this operation requires no sudo privilages
+# we need it at preparation stage to prevent
+# 'vagrant up' failure.
+./eurolinux_vagrant_centos_stream_9.sh
+
 echo "System preparation completed successfully."

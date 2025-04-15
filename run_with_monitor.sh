@@ -44,13 +44,7 @@ else
     echo "vagrant-libvirt plugin is already installed."
 fi
 
-# Check if the box 'eurolinux-vagrant/centos-stream-9' is already added
-if ! vagrant box list | grep -q 'eurolinux-vagrant/centos-stream-9'; then
-    echo "Adding the 'eurolinux-vagrant/centos-stream-9' box..."
-    vagrant box add eurolinux-vagrant/centos-stream-9 --provider libvirt
-else
-    echo "'eurolinux-vagrant/centos-stream-9' box is already added."
-fi
+./eurolinux_vagrant_centos_stream_9.sh
 
 # Install community.general module
 ansible-galaxy collection install community.general
