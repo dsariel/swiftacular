@@ -14,10 +14,19 @@
     - name: Install patch package
       command: dnf install -y patch
 
+    - name: Check if sharder patch is already applied
+      shell: patch --dry-run -p0 < /tmp/sharder.patch
+      args:
+        chdir: /usr/lib/python3.9/site-packages/swift/container
+      register: patch_check
+      failed_when: false
+      changed_when: false
+
     - name: Apply sharder patch
       shell: patch -p0 < /tmp/sharder.patch  # Shell because '<' doesn't work otherwise
       args:
         chdir: /usr/lib/python3.9/site-packages/swift/container
+      when: patch_check.rc == 0
     
     - name: Stop sharders
       command: swift-init container-sharder stop
