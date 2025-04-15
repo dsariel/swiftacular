@@ -16,7 +16,7 @@
     - object
     - container
 
-- name: restart swift-storage node services
+- name: stop swift-storage node services
   command: swift-init all stop
   when: new_rings.changed
   ignore_errors: True
