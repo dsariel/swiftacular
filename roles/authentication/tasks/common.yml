@@ -121,7 +121,6 @@
     /usr/local/bin/openstack endpoint create --region {{ keystone_region }} object-store internal 'http://{{ swift_proxy_server }}:8080/v1/AUTH_$(tenant_id)s'
     /usr/local/bin/openstack endpoint create --region {{ keystone_region }} object-store admin http://{{ swift_proxy_server }}:8080/v1
   environment: "{{ admin_env }}"
-  ignore_errors: true
 
 - name: Set up basic projects
   shell: |
