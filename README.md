@@ -9,7 +9,7 @@
 
 # OpenStack Swift and Ansible
 
-This repository will create a virtualized OpenStack Swift cluster using Vagrant, VirtualBox, Ansible.
+This repository will create a virtualized OpenStack Swift cluster using Vagrant, libvirt, Ansible.
 
 #### Table of Contents
 
@@ -29,24 +29,27 @@ This repository will create a virtualized OpenStack Swift cluster using Vagrant,
 *Note this will start seven virtual machines on your computer.*
 
 ```bash
-$ git clone git@github.com:curtisgithub/swiftacular.git
+$ git clone https://github.com/dsariel/swiftacular.git
 $ cd swiftacular
-# Checkout some modules to help with managing openstack 
-$ git clone https://github.com/openstack-ansible/openstack-ansible-modules library/openstack
-$ vagrant up
-$ cp group_vars/all.example group_vars/all # and edit if desired
-$ ansible-playbook deploy_swift_cluster.yml
+# Install prerequisites on the host
+$ ./install_prereqs.sh
+# Deploy Swift and monitoring dashboards
+$ ./bootstrap_swift_with_monitoring.sh
 ```
 
 ## Supported Operating Systems and OpenStack Releases
 
-* CentOS 6.5 with OpenStack Havana packages
-* Ubuntu 12.04 with OpenStack Havana packages
-* Ubuntu 14.04 with OpenStack Icehouse packages
+### Fedora 40
+| VM              | Swift Version           | Status    |
+|-----------------|-------------------------|-----------|
+| CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
+| Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
 
-Ubuntu 14.04 is probably the most tested version right now, then Ubuntu 12.04, followed up by Redhat/CentOS 6.5+.
-
-The Vagrantfile has the above boxes in place with Ubuntu 12.04 being the default uncommented box. To use one of the other operating systems as the basis for Swiftacular, simply uncomment the OS you would like to use in the Vagrant file, and make sure the other boxes are commented out.
+### Ubuntu 24.04
+| VM              | Swift Version           | Status    |
+|-----------------|-------------------------|-----------|
+| CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
+| Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
 
 ## Features
 
@@ -101,7 +104,7 @@ However, I usually login to the package_cache server and use swift from there.
 
 ```bash
 $ vagrant ssh swift-package-cache-01
-vagrant@swift-package-cache-01:~$ . testrc 
+vagrant@swift-package-cache-01:~$ . /vagrant/testrc 
 vagrant@swift-package-cache-01:~$ swift list
 vagrant@swift-package-cache-01:~$ echo "swift is cool" > swift.txt
 vagrant@swift-package-cache-01:~$ swift upload swifty swift.txt 
