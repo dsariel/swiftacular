@@ -13,16 +13,24 @@ This repository will create a virtualized OpenStack Swift cluster using Vagrant,
 
 #### Table of Contents
 
-1. [Too long; didn't read](#tldr)
-2. [Features](#features)
-3. [Requirements](#requirements)
-4. [Networking setup](#networking-setup)
-5. [Starting over](#starting-over)
-6. [Development environment](#development-environment)
-7. [Modules](#modules)
-8. [Future work](#future-work)
-9. [Issues](#issues)
-10. [Notes](#notes)
+- [OpenStack Swift and Ansible](#openstack-swift-and-ansible)
+      - [Table of Contents](#table-of-contents)
+  - [tl;dr](#tldr)
+  - [Supported Operating Systems and OpenStack Releases](#supported-operating-systems-and-openstack-releases)
+    - [Fedora 40](#fedora-40)
+    - [Ubuntu 24.04](#ubuntu-2404)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Virtual machines created](#virtual-machines-created)
+  - [Networking setup](#networking-setup)
+  - [Self-signed certificates](#self-signed-certificates)
+  - [Using the swift command line client](#using-the-swift-command-line-client)
+  - [Starting over](#starting-over)
+  - [Development environment](#development-environment)
+  - [Modules](#modules)
+  - [Future work](#future-work)
+  - [Issues](#issues)
+  - [Notes](#notes)
 
 ## tl;dr
 
@@ -50,6 +58,18 @@ $ ./bootstrap_swift_with_monitoring.sh
 |-----------------|-------------------------|-----------|
 | CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
 | Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
+
+
+By default, vagrant will use CentOS Stream 9:
+```bash
+$ vagrant up
+```
+
+To use Ubuntu 24.04 instead:
+
+```bash
+$ VM_BOX=ubuntu vagrant up
+```
 
 ## Features
 
