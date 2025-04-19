@@ -79,7 +79,7 @@ $ VM_BOX=ubuntu vagrant up
 * Sparse files to back Swift disks
 * Tests for uploading files into Swift
 * Use of [gauntlt](http://gauntlt.org/) attacks to verify installation
-* Supports Ubuntu Precise 12.04, Trusty 14.04 and CentOS 6.5
+
 
 ## Requirements
 
