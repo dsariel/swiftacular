@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
         box.vm.hostname = "#{hostname}.example.com"
 
         box.vm.provider :libvirt do |v|
-          v.memory = 3072
+          v.memory = 1024 #3072
         end
 
         # ------- Networks  
