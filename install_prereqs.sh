@@ -32,11 +32,9 @@ ensure_user_exists() {
 }
 
 post_install_common() {
-    # Install the PCP metrics collection (no need in sudo permissions)
-    ansible-galaxy collection install performancecopilot.metrics
-    check_success "ansible-galaxy collection install performancecopilot.metrics"
-
-    # Enable and start PCP services
+    # Although the performancecopilot.metrics collection requires no special permissions,
+    # Enabling pmcd/pmlogger services does. We could start them manually, but it's better
+    # to spare the effort of managing logging, config, and monitoring, and instead rely on systemd.
     systemctl enable pmcd
     check_success "systemctl enable pmcd"
     systemctl enable pmlogger
@@ -109,11 +107,19 @@ install_for_ubuntu() {
         libxml2-dev \
         libxslt1-dev \
         zlib1g-dev \
-        ansible \
         software-properties-common \
         pkg-config \
-        golang-go
+        golang-go \
+        pcp
+
     check_success "apt install packages"
+
+    pip install --user ansible
+    check_success "pip install --user ansible"
+
+    grep -qxF 'export PATH=$HOME/.local/bin:$PATH' ~/.bashrc || echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+
+
 
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
     sudo apt install ./vagrant_2.4.0-1_amd64.deb

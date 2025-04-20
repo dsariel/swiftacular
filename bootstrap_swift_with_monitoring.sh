@@ -52,6 +52,9 @@ ansible-galaxy collection install community.general
 # Install community.mysql
 ansible-galaxy collection install community.mysql
 
+# Install performancecopilot.metrics collection
+ansible-galaxy collection install performancecopilot.metrics
+
 # Run the playbooks with timing and logging
 echo start
 vagrant up
