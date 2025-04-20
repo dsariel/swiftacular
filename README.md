@@ -47,13 +47,13 @@ $ ./bootstrap_swift_with_monitoring.sh
 
 ## Supported Operating Systems and OpenStack Releases
 
-### Fedora 40
+### Hosting on Fedora 40
 | VM              | Swift Version           | Status    |
 |-----------------|-------------------------|-----------|
 | CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
 | Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
 
-### Ubuntu 24.04
+### Hosting on Ubuntu 22.04
 | VM              | Swift Version           | Status    |
 |-----------------|-------------------------|-----------|
 | CentOS Stream 9 | OpenStack stable/2025.1 | Supported |

@@ -148,14 +148,14 @@ case "$OS_ID" in
     install_for_fedora
     ;;
   ubuntu)
-    if [[ "$VERSION_ID" != "24.04" ]]; then
-      echo "Only Ubuntu 24.04 is supported. Detected: Ubuntu $VERSION_ID"
+    if [[ "$VERSION_ID" != "22.04" ]]; then
+      echo "Only Ubuntu 22.04 is supported. Detected: Ubuntu $VERSION_ID"
       exit 1
     fi
     install_for_ubuntu
     ;;
   *)
-    echo "Unsupported OS: $OS_ID $VERSION_ID. Only Fedora 40 and Ubuntu 24.04 are supported."
+    echo "Unsupported OS: $OS_ID $VERSION_ID. Only Fedora 40 and Ubuntu 22.04 are supported."
     exit 1
     ;;
 esac
