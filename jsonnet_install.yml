@@ -1,5 +1,5 @@
 ---
-- name: Install jsonnet from source for a regular user
+- name: Install jsonnet and jb (Jsonnet Bundler) from source for a regular user
   hosts: localhost
   become: no
   gather_facts: no
@@ -20,6 +20,18 @@
         dest: "{{ lookup('env', 'HOME') }}/.local/bin/jsonnet"
         mode: '0755'
 
+    - name: Download jb binary
+      get_url:
+        url: https://github.com/jsonnet-bundler/jsonnet-bundler/releases/latest/download/jb-linux-amd64
+        dest: "{{ lookup('env', 'HOME') }}/.local/bin:{{ ansible_env.PATH }}"
+        mode: '0755'
+        
+    - name: Add jb to the user's local bin directory
+      copy:
+        src: "{{ lookup('env', 'HOME') }}/jsonnet-bundler/jb"
+        dest: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
+        mode: '0755'
+
     - name: Ensure ~/.local/bin is in the user's PATH
       lineinfile:
         path: "{{ lookup('env', 'HOME') }}/.bashrc"
@@ -29,3 +41,5 @@
 
     - name: Install jsonnet packages from jsonnetfile.json
       shell: jb install
+      environment:
+        PATH: "{{ lookup('env', 'HOME') }}/.local/bin:{{ ansible_env.PATH }}"

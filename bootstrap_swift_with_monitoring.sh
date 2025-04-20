@@ -53,7 +53,10 @@ ansible-galaxy collection install community.general
 ansible-galaxy collection install community.mysql
 
 # Install performancecopilot.metrics collection
-ansible-galaxy collection install performancecopilot.metrics
+# Explicitly get v2.3.0. ansible-galaxy collection install performancecopilot.metrics
+# installs lates 2.4.0 without redis roles.
+# TODO: install latest, address the issue.
+ansible-galaxy collection install git+https://github.com/performancecopilot/ansible-pcp.git,v2.3.0
 
 # Run the playbooks with timing and logging
 echo start

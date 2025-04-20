@@ -69,10 +69,10 @@
     - name:  pip install grafana
       command: pip install grafana-client
 
-- name: Add PCP Redis datasource to Grafana
+- name: Delete PCP Redis datasource to Grafana
   hosts: grafana
   tasks:
-    - name: Run the configure_grafana.py script
+    - name: Run the configure_grafana.py script - delete-default-pcp-datasource
       script: monitoring/grafana/configure_grafana.py  delete-default-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin
       args:
         executable: python3
@@ -81,7 +81,7 @@
 - name: Add PCP Redis datasource to Grafana
   hosts: storage,proxy
   tasks:
-    - name: Run the configure_grafana.py script
+    - name: Run the configure_grafana.py script -  create-pcp-datasource
       script: monitoring/grafana/configure_grafana.py  create-pcp-datasource {{ hostvars['grafana-01']['ansible_default_ipv4']['address'] }}:3000 admin admin {{ inventory_hostname }} {{ ansible_host }}
       args:
         executable: python3

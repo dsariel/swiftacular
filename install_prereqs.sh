@@ -89,8 +89,11 @@ install_for_fedora() {
     yum -y groupinstall "Development tools"
     check_success "yum groupinstall Development tools"
 
-    dnf install -y golang-github-jsonnet-bundler
-    check_success "install jsonnet bundler"
+    #dnf install -y golang-github-jsonnet-bundler
+    #check_success "install jsonnet bundler"
+
+    pip uninstall -y resolvelib
+    pip install --user resolvelib==0.5.5
 }
 
 install_for_ubuntu() {
@@ -98,6 +101,7 @@ install_for_ubuntu() {
     check_success "apt-get update"
     apt-get install -y \
         qemu-kvm \
+        libvirt-dev \
         libvirt-daemon-system \
         libvirt-clients \
         build-essential \
@@ -124,6 +128,10 @@ install_for_ubuntu() {
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
     sudo apt install ./vagrant_2.4.0-1_amd64.deb
     check_success "apt install vagrant"
+
+    # Avoid Permission denied ~/swiftacular/.vagrant/bundler error
+    chown -R "$USER:$USER" .vagrant
+    check_success "chown -R ... .vagrant"
 }
 
 ensure_user_exists
