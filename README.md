@@ -17,27 +17,25 @@ This repository will create a virtualized OpenStack Swift cluster using Vagrant,
       - [Table of Contents](#table-of-contents)
   - [tl;dr](#tldr)
   - [Supported Operating Systems and OpenStack Releases](#supported-operating-systems-and-openstack-releases)
-    - [Fedora 40](#fedora-40)
-    - [Ubuntu 24.04](#ubuntu-2404)
+    - [Fedora 40](#hosting-on-fedora-40)
+    - [Ubuntu 24.04](#hosting-on-ubuntu-2204)
   - [Features](#features)
-  - [Requirements](#requirements)
+  - [Requirements](#hardware-requirements)
   - [Virtual machines created](#virtual-machines-created)
   - [Networking setup](#networking-setup)
   - [Self-signed certificates](#self-signed-certificates)
   - [Using the swift command line client](#using-the-swift-command-line-client)
   - [Starting over](#starting-over)
-  - [Development environment](#development-environment)
   - [Modules](#modules)
-  - [Future work](#future-work)
   - [Issues](#issues)
-  - [Notes](#notes)
+ 
 
 ## tl;dr
 
 *Note this will start seven virtual machines on your computer.*
 
 ```bash
-$ git clone https://github.com/dsariel/swiftacular.git
+# Clone swiftaucular repo
 $ cd swiftacular
 # Install prerequisites on the host
 $ ./install_prereqs.sh
@@ -81,12 +79,17 @@ $ VM_BOX=ubuntu vagrant up
 * Use of [gauntlt](http://gauntlt.org/) attacks to verify installation
 
 
-## Requirements
+## Hardware Requirements
 
-* Vagrant and Virtualbox
- * For Ubuntu I am using the official Vagrant Precise64 images
- * For CentOS 6 I am using the [Vagrant box](http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box) provided by Puppet Labs
-* Enough resources on your computer to run seven vms
+Minimal Host Requirements:
+CPU: 6 vCPUs
+RAM: 16 GB
+Disk: ~120 GB
+
+Recommended Host Requirements:
+CPU: 16+ vCPUs
+RAM: 64+ GB
+Disk: 500 GB+ SSD (preferably NVMe)
 
 ## Virtual machines created
 
@@ -142,10 +145,8 @@ If you want to redo the installation there are a few ways.
 To restart completely:
 
 ```bash
-$ vagrant destroy -f
-$ vagrant up
-# wait...
-$ ansible-playbook deploy_swift_cluster.yml
+$ ./cleanup.sh
+$ ./bootstrap_swift_with_monitoring.sh
 ```
 
 There is a script to destroy and rebuild everything but the package cache:
@@ -170,29 +171,16 @@ $ ansible-playbook ./playbook/remove_keystone.yml
 $ ansible-playbook deploy_swift_cluster.yml
 ```
 
-## Development environment
+To change debug level output of Vagrant
 
-This playbook was developed in the following environment:
-
-* OSX 10.8.2
-* Ansible 1.4
-* Virtualbox 4.2.6
-* Vagrant 1.3.5
+```bash
+export VAGRANT_LOG=debug
+```
 
 ## Modules
 
-There is an swift-ansible-modules directory in the library directory that contains a couple of modules taken from the official Ansible modules as well as the [openstack-ansible-modules](https://github.com/lorin/openstack-ansible) and for now both have been modified to allow the "insecure" option, which means self-signed certificates. I hope to get those changes into their respective repositories soon.
-
-## Future work
-
-See the [issues](https://github.com/curtisgithub/swiftacular/issues) in the tracking system on Github for Swiftacular with the enhancement label.
+- library/swift-ansible-modules/keystone_user
 
 ## Issues
 
 See the [issues](https://github.com/curtisgithub/swiftacular/issues) in the tracking tracking system on Github for Swiftacular.
-
-## Notes
-
-* I know that Vagrant can automatically start Ansible playbooks on the creation of a vm, but I prefer to run the playbook manually
-* LXC is likely a better fit than Virtualbox given all the vms are the same OS and we don't need to boot any vms within vms inception style
-* Starting the vms is a bit slow I believe because of the extra networks
