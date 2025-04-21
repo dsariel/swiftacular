@@ -17,27 +17,25 @@ This repository will create a virtualized OpenStack Swift cluster using Vagrant,
       - [Table of Contents](#table-of-contents)
   - [tl;dr](#tldr)
   - [Supported Operating Systems and OpenStack Releases](#supported-operating-systems-and-openstack-releases)
-    - [Fedora 40](#fedora-40)
-    - [Ubuntu 24.04](#ubuntu-2404)
+    - [Fedora 40](#hosting-on-fedora-40)
+    - [Ubuntu 24.04](#hosting-on-ubuntu-2204)
   - [Features](#features)
-  - [Requirements](#requirements)
+  - [Requirements](#hardware-requirements)
   - [Virtual machines created](#virtual-machines-created)
   - [Networking setup](#networking-setup)
   - [Self-signed certificates](#self-signed-certificates)
   - [Using the swift command line client](#using-the-swift-command-line-client)
   - [Starting over](#starting-over)
-  - [Development environment](#development-environment)
   - [Modules](#modules)
-  - [Future work](#future-work)
   - [Issues](#issues)
-  - [Notes](#notes)
+ 
 
 ## tl;dr
 
 *Note this will start seven virtual machines on your computer.*
 
 ```bash
-$ git clone https://github.com/dsariel/swiftacular.git
+# Clone swiftaucular repo
 $ cd swiftacular
 # Install prerequisites on the host
 $ ./install_prereqs.sh
@@ -173,29 +171,16 @@ $ ansible-playbook ./playbook/remove_keystone.yml
 $ ansible-playbook deploy_swift_cluster.yml
 ```
 
-## Development environment
+To change debug level output of Vagrant
 
-This playbook was developed in the following environment:
-
-* OSX 10.8.2
-* Ansible 1.4
-* Virtualbox 4.2.6
-* Vagrant 1.3.5
+```bash
+export VAGRANT_LOG=debug
+```
 
 ## Modules
 
-There is an swift-ansible-modules directory in the library directory that contains a couple of modules taken from the official Ansible modules as well as the [openstack-ansible-modules](https://github.com/lorin/openstack-ansible) and for now both have been modified to allow the "insecure" option, which means self-signed certificates. I hope to get those changes into their respective repositories soon.
-
-## Future work
-
-See the [issues](https://github.com/curtisgithub/swiftacular/issues) in the tracking system on Github for Swiftacular with the enhancement label.
+- library/swift-ansible-modules/keystone_user
 
 ## Issues
 
 See the [issues](https://github.com/curtisgithub/swiftacular/issues) in the tracking tracking system on Github for Swiftacular.
-
-## Notes
-
-* I know that Vagrant can automatically start Ansible playbooks on the creation of a vm, but I prefer to run the playbook manually
-* LXC is likely a better fit than Virtualbox given all the vms are the same OS and we don't need to boot any vms within vms inception style
-* Starting the vms is a bit slow I believe because of the extra networks
