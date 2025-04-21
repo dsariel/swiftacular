@@ -106,6 +106,7 @@ install_for_ubuntu() {
         libvirt-clients \
         build-essential \
         python3-pip \
+        python-is-python3 \
         ruby-dev \
         rsync \
         libxml2-dev \
