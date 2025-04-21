@@ -81,12 +81,17 @@ $ VM_BOX=ubuntu vagrant up
 * Use of [gauntlt](http://gauntlt.org/) attacks to verify installation
 
 
-## Requirements
+## Hardware Requirements
 
-* Vagrant and Virtualbox
- * For Ubuntu I am using the official Vagrant Precise64 images
- * For CentOS 6 I am using the [Vagrant box](http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box) provided by Puppet Labs
-* Enough resources on your computer to run seven vms
+Minimal Host Requirements:
+CPU: 6 vCPUs
+RAM: 16 GB
+Disk: ~120 GB
+
+Recommended Host Requirements:
+CPU: 16+ vCPUs
+RAM: 64+ GB
+Disk: 500 GB+ SSD (preferably NVMe)
 
 ## Virtual machines created
 
@@ -142,10 +147,8 @@ If you want to redo the installation there are a few ways.
 To restart completely:
 
 ```bash
-$ vagrant destroy -f
-$ vagrant up
-# wait...
-$ ansible-playbook deploy_swift_cluster.yml
+$ ./cleanup.sh
+$ ./bootstrap_swift_with_monitoring.sh
 ```
 
 There is a script to destroy and rebuild everything but the package cache:
