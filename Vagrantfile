@@ -43,7 +43,14 @@ Vagrant.configure("2") do |config|
 
 
       config.vm.define "#{hostname}" do |box|
-        puts "Working on #{hostname} (#{selected_box}) at 192.168.100.#{ip_start + i}"
+        box.vm.provision "shell", privileged: false, inline: <<-SHELL
+          if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            echo "Working on #{hostname} running $NAME $VERSION"
+          else
+            echo "Working on #{hostname} (unknown OS)"
+          fi
+        SHELL
 
         box.vm.hostname = "#{hostname}.example.com"
 
@@ -51,7 +58,7 @@ Vagrant.configure("2") do |config|
           v.memory = 1024 #3072
         end
 
-        # ------- Networks  
+        # ------- Networks
         # Public
         box.vm.network :private_network, ip: "192.168.100.#{ip_start + i}", netmask: "255.255.255.0"
         # SSL and loadbalancing
