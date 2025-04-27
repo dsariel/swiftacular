@@ -19,8 +19,8 @@ box_config = {
     box_url: "https://app.vagrantup.com/eurolinux-vagrant/boxes/centos-stream-9/versions/9.0.28/providers/libvirt.box"
   },
   "ubuntu" => {
-    box:     "ubuntu/ubuntu-24.04",
-    box_url: "https://app.vagrantup.com/ubuntu/boxes/ubuntu-24.04"
+    box:     "generic/ubuntu2204",
+    box_url: "https://vagrantcloud.com/generic/boxes/ubuntu2204/versions/4.3.12/providers/libvirt/amd64/vagrant.box",
   }
 }
 
