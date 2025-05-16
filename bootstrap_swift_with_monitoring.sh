@@ -67,19 +67,21 @@ vagrant up
 virsh -c qemu:///session list --all     # user session
 virsh -c qemu:///system list --all      # system session
 
-exit 0
-ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts monitor_swift_cluster.yml
+
+ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts setup-swift-monitoring.yml
 
 # Install jsonnet on localhost
 ansible-playbook -i 'localhost,' -c local jsonnet_install.yml
  
+
 # Iterate over dashboard pairs and create each dashboard
 for dashboard in "${!dashboards[@]}"; do
   uid=${dashboards[$dashboard]}
   python monitoring/grafana/configure_grafana.py create-dashboard ${grafana_ip}:3000 admin admin "monitoring/grafana/dashboards/${dashboard}" "${uid}"
   echo "Grafana Dashboard for ${dashboard}: http://${grafana_ip}:3000/d/${uid}/"
 done
- 
+
+
 # Deploy Swift Cluster
 cp group_vars/all.example group_vars/all
 run_playbook "deploy_swift_cluster.yml" "Deploy Swift Cluster"
