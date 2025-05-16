@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = box_config[selected_box][:box_url]
 
   config.vm.provider :libvirt do |libvirt|
-    libvirt.qemu_use_session = false
+    libvirt.qemu_use_session = false # use the system libvirt session
     # libvirt.uri = 'qemu:///system' # fallback if the above line doesn't work
   end
 

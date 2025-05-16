@@ -44,7 +44,7 @@ else
     echo "vagrant-libvirt plugin is already installed."
 fi
 
-./eurolinux_vagrant_centos_stream_9.sh
+./vagrant_box.sh
 
 # Install community.general module
 ansible-galaxy collection install community.general
@@ -63,6 +63,11 @@ echo start
 vagrant up
 
 
+# List VMs in all sessions
+virsh -c qemu:///session list --all     # user session
+virsh -c qemu:///system list --all      # system session
+
+exit 0
 ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts monitor_swift_cluster.yml
 
 # Install jsonnet on localhost

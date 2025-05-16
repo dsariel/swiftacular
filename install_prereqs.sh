@@ -57,12 +57,12 @@ post_install_common() {
     pip3 install grafana-client || pip install grafana-client
     check_success "install grafana-client"
 
-    # Add eurolinux-vagrant/centos-stream-9
+    # Add vagrant boxes
     # this operation requires no sudo privilages
     # we need it at preparation stage to prevent
     # 'vagrant up' failure.
-    ./eurolinux_vagrant_centos_stream_9.sh
-    check_success "run ./eurolinux_vagrant_centos_stream_9.sh"
+    ./vagrant_box.sh
+    check_success "run ./vagrant_box.sh"
 }
 
 install_for_fedora() {
