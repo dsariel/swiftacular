@@ -63,6 +63,14 @@ post_install_common() {
     # 'vagrant up' failure.
     ./vagrant_box.sh
     check_success "run ./vagrant_box.sh"
+
+    python3 -m pip install --upgrade pip --user
+    check_success "python3 -m pip install --upgrade pip --user"
+
+    pip install --upgrade --user ansible
+    check_success "pip install --upgrade --user ansible"
+
+
 }
 
 install_for_fedora() {
@@ -119,12 +127,7 @@ install_for_ubuntu() {
 
     check_success "apt install packages"
 
-    pip install --user ansible
-    check_success "pip install --user ansible"
-
     grep -qxF 'export PATH=$HOME/.local/bin:$PATH' ~/.bashrc || echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-
-
 
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
     sudo apt install ./vagrant_2.4.0-1_amd64.deb
