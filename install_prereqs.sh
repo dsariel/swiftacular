@@ -70,6 +70,8 @@ post_install_common() {
     pip install --upgrade --user ansible
     check_success "pip install --upgrade --user ansible"
 
+    pip install --user grafana-client
+
 
 }
 
