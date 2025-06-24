@@ -31,5 +31,12 @@
   service: name=openstack-swift-proxy state=started
   when: ansible_os_family == 'RedHat'
 
+- name: check if object-expirer is running
+  command: swift-init object-expirer status
+  register: expirer_status
+  failed_when: false
+  changed_when: false
+
 - name: start object-expirer on proxy nodes
   command: swift-init object-expirer start
+  when: expirer_status.rc != 0
