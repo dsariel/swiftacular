@@ -96,8 +96,8 @@ install_for_fedora() {
     yum -y install vagrant
     check_success "yum install vagrant"
 
-    yum -y groupinstall "Development tools"
-    check_success "yum groupinstall Development tools"
+    dnf5 install -y @development-tools
+    check_success "dnf5 install @development-tools"
 
     #dnf install -y golang-github-jsonnet-bundler
     #check_success "install jsonnet bundler"
@@ -147,8 +147,8 @@ VERSION_ID=$(grep -oP '^VERSION_ID=\K.*' /etc/os-release | tr -d '"')
 
 case "$OS_ID" in
   fedora)
-    if [[ "$VERSION_ID" != "40" ]]; then
-      echo "Only Fedora 40 is supported. Detected: Fedora $VERSION_ID"
+    if [[ "$VERSION_ID" != "42" ]]; then
+      echo "Only Fedora 42 is supported. Detected: Fedora $VERSION_ID"
       exit 1
     fi
     install_for_fedora
