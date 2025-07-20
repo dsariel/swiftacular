@@ -14,7 +14,10 @@ run_playbook() {
   local playbook=$1
   local description=$2
 
-  echo "Running $description..."
+  echo "*********************************************************************************************"
+  echo "Running playbook $description..."
+  echo "*********************************************************************************************"
+
   local start_time=$(date +%s%3N)  # Get start time in epoch milliseconds
 
   ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts $playbook
@@ -67,6 +70,7 @@ vagrant up
 virsh -c qemu:///session list --all     # user session
 virsh -c qemu:///system list --all      # system session
 
+cp group_vars/all.example group_vars/all
 
 ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts setup-swift-monitoring.yml
 
@@ -81,11 +85,9 @@ for dashboard in "${!dashboards[@]}"; do
   echo "Grafana Dashboard for ${dashboard}: http://${grafana_ip}:3000/d/${uid}/"
 done
 
-
-# Deploy Swift Cluster
-cp group_vars/all.example group_vars/all
+Deploy Swift Cluster
 run_playbook "deploy_swift_cluster.yml" "Deploy Swift Cluster"
- 
+
 run_playbook "setup_workload_test.yml" "Setup Workload Test"
 
 
