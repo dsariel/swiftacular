@@ -53,10 +53,6 @@ post_install_common() {
     usermod -a -G libvirt "$USERNAME"
     check_success "usermod -a -G libvirt $USERNAME"
 
-    # Install grafana-client
-    pip3 install grafana-client || pip install grafana-client
-    check_success "install grafana-client"
-
     # Add vagrant boxes
     # this operation requires no sudo privilages
     # we need it at preparation stage to prevent
@@ -69,9 +65,6 @@ post_install_common() {
 
     pip install --upgrade --user ansible
     check_success "pip install --upgrade --user ansible"
-
-    pip install --user grafana-client
-
 
 }
 
