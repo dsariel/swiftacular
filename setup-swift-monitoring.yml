@@ -20,7 +20,6 @@
     - name: Install required packages
       dnf:
         name:
-          #- python3-pip
           - python3-devel
           - pcp-devel
           - liberasurecode-devel
@@ -55,7 +54,6 @@
       ansible.builtin.dnf:
         name:
           - python3-pyxattr
-          - python3-pip
         state: present
 
     - name: Install OpenStack Swift
@@ -108,7 +106,6 @@
       dnf:
         name:
           - python3-devel
-          # - python3-pip
         state: present
 
     - name: Create virtual environment for grafana-client
