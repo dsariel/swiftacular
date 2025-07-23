@@ -60,9 +60,6 @@ post_install_common() {
     ./vagrant_box.sh
     check_success "run ./vagrant_box.sh"
 
-    python3 -m pip install --upgrade pip --user
-    check_success "python3 -m pip install --upgrade pip --user"
-
     pip install --upgrade --user ansible
     check_success "pip install --upgrade --user ansible"
 
