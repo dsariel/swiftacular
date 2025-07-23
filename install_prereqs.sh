@@ -85,12 +85,8 @@ install_for_fedora() {
     dnf install -y vagrant
     check_success "dnf install vagrant"
 
-
     dnf5 install -y @development-tools
     check_success "dnf5 install @development-tools"
-
-    #dnf install -y golang-github-jsonnet-bundler
-    #check_success "install jsonnet bundler"
 
     pip uninstall -y resolvelib
     pip install --user resolvelib==0.5.5
