@@ -26,8 +26,8 @@
     msg: swift-ring-builder account.builder add r{{ region }}z{{ zone }}-{{ ansible_ens8.ipv4.address }}:6002R{{ ansible_ens9.ipv4.address }}:6002/{{ disk_prefix }}{{ item|int - 1 }} 100 
   delegate_to: "{{ swift_proxy_server }}"
   vars:
-    - ansible_ssh_user: vagrant
-    - ansible_ssh_private_key_file: /opt/swiftacular/.vagrant/machines/swift-proxy-01/virtualbox/private_key   
+    ansible_ssh_user: vagrant
+    ansible_ssh_private_key_file: /opt/swiftacular/.vagrant/machines/swift-proxy-01/virtualbox/private_key
   with_sequence: count={{ disks }}
 
 
@@ -36,8 +36,8 @@
            chdir=/etc/swift
   delegate_to: "{{ swift_proxy_server }}"
   vars:
-    - ansible_ssh_user: vagrant
-    - ansible_ssh_private_key_file: /opt/swiftacular/.vagrant/machines/swift-proxy-01/virtualbox/private_key   
+    ansible_ssh_user: vagrant
+    ansible_ssh_private_key_file: /opt/swiftacular/.vagrant/machines/swift-proxy-01/virtualbox/private_key
   with_sequence: count={{ disks }}
   when: rings_exist.rc > 0
 #  when: losetup.rc >0 and rings_exist.rc > 0

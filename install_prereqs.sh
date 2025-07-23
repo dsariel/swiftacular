@@ -53,20 +53,23 @@ post_install_common() {
     usermod -a -G libvirt "$USERNAME"
     check_success "usermod -a -G libvirt $USERNAME"
 
-    # Install grafana-client
-    pip3 install grafana-client || pip install grafana-client
-    check_success "install grafana-client"
-
-    # Add eurolinux-vagrant/centos-stream-9
+    # Add vagrant boxes
     # this operation requires no sudo privilages
     # we need it at preparation stage to prevent
     # 'vagrant up' failure.
-    ./eurolinux_vagrant_centos_stream_9.sh
-    check_success "run ./eurolinux_vagrant_centos_stream_9.sh"
+    ./vagrant_box.sh
+    check_success "run ./vagrant_box.sh"
+
+    python3 -m pip install --upgrade pip --user
+    check_success "python3 -m pip install --upgrade pip --user"
+
+    pip install --upgrade --user ansible
+    check_success "pip install --upgrade --user ansible"
+
 }
 
 install_for_fedora() {
-    yum install -y yum-utils \
+    dnf install -y dnf-utils \
                    libvirt-devel \
                    qemu-kvm \
                    pcp-devel \
@@ -76,21 +79,14 @@ install_for_fedora() {
                    zlib-devel \
                    ruby-devel \
                    rsync
-    check_success "yum install packages"
+    check_success "dnf install packages"
 
-    # Add HashiCorp repository and install Vagrant
-    # https://developer.hashicorp.com/vagrant/downloads
-    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-    check_success "yum-config-manager --add-repo"
+    # Install Vagrant
+    dnf install -y vagrant
+    check_success "dnf install vagrant"
 
-    yum -y install vagrant
-    check_success "yum install vagrant"
-
-    yum -y groupinstall "Development tools"
-    check_success "yum groupinstall Development tools"
-
-    #dnf install -y golang-github-jsonnet-bundler
-    #check_success "install jsonnet bundler"
+    dnf5 install -y @development-tools
+    check_success "dnf5 install @development-tools"
 
     pip uninstall -y resolvelib
     pip install --user resolvelib==0.5.5
@@ -119,12 +115,7 @@ install_for_ubuntu() {
 
     check_success "apt install packages"
 
-    pip install --user ansible
-    check_success "pip install --user ansible"
-
     grep -qxF 'export PATH=$HOME/.local/bin:$PATH' ~/.bashrc || echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-
-
 
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
     sudo apt install ./vagrant_2.4.0-1_amd64.deb
@@ -142,8 +133,8 @@ VERSION_ID=$(grep -oP '^VERSION_ID=\K.*' /etc/os-release | tr -d '"')
 
 case "$OS_ID" in
   fedora)
-    if [[ "$VERSION_ID" != "40" ]]; then
-      echo "Only Fedora 40 is supported. Detected: Fedora $VERSION_ID"
+    if [[ "$VERSION_ID" != "42" ]]; then
+      echo "Only Fedora 42 is supported. Detected: Fedora $VERSION_ID"
       exit 1
     fi
     install_for_fedora

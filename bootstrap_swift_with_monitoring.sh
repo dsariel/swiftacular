@@ -14,7 +14,10 @@ run_playbook() {
   local playbook=$1
   local description=$2
 
-  echo "Running $description..."
+  echo "*********************************************************************************************"
+  echo "Running playbook $description..."
+  echo "*********************************************************************************************"
+
   local start_time=$(date +%s%3N)  # Get start time in epoch milliseconds
 
   ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts $playbook
@@ -44,7 +47,7 @@ else
     echo "vagrant-libvirt plugin is already installed."
 fi
 
-./eurolinux_vagrant_centos_stream_9.sh
+./vagrant_box.sh
 
 # Install community.general module
 ansible-galaxy collection install community.general
@@ -63,22 +66,24 @@ echo start
 vagrant up
 
 
-ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts monitor_swift_cluster.yml
+cp group_vars/all.example group_vars/all
+
+ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts setup-swift-monitoring.yml
 
 # Install jsonnet on localhost
 ansible-playbook -i 'localhost,' -c local jsonnet_install.yml
  
+
 # Iterate over dashboard pairs and create each dashboard
 for dashboard in "${!dashboards[@]}"; do
   uid=${dashboards[$dashboard]}
   python monitoring/grafana/configure_grafana.py create-dashboard ${grafana_ip}:3000 admin admin "monitoring/grafana/dashboards/${dashboard}" "${uid}"
   echo "Grafana Dashboard for ${dashboard}: http://${grafana_ip}:3000/d/${uid}/"
 done
- 
+
 # Deploy Swift Cluster
-cp group_vars/all.example group_vars/all
 run_playbook "deploy_swift_cluster.yml" "Deploy Swift Cluster"
- 
+
 run_playbook "setup_workload_test.yml" "Setup Workload Test"
 
 

@@ -18,7 +18,7 @@ This repository will create a virtualized OpenStack Swift cluster using Vagrant,
   - [tl;dr](#tldr)
   - [Supported Operating Systems and OpenStack Releases](#supported-operating-systems-and-openstack-releases)
     - [Fedora 40](#hosting-on-fedora-40)
-    - [Ubuntu 24.04](#hosting-on-ubuntu-2204)
+    - [Ubuntu 22.04](#hosting-on-ubuntu-2204)
   - [Features](#features)
   - [Requirements](#hardware-requirements)
   - [Virtual machines created](#virtual-machines-created)
@@ -49,13 +49,13 @@ $ ./bootstrap_swift_with_monitoring.sh
 | VM              | Swift Version           | Status    |
 |-----------------|-------------------------|-----------|
 | CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
-| Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
+| Ubuntu 22.04    | OpenStack stable/2025.1 | WIP       |
 
 ### Hosting on Ubuntu 22.04
 | VM              | Swift Version           | Status    |
 |-----------------|-------------------------|-----------|
 | CentOS Stream 9 | OpenStack stable/2025.1 | Supported |
-| Ubuntu 24.04    | OpenStack stable/2025.1 | WIP       |
+| Ubuntu 22.04    | OpenStack stable/2025.1 | WIP       |
 
 
 By default, vagrant will use CentOS Stream 9:
@@ -63,11 +63,15 @@ By default, vagrant will use CentOS Stream 9:
 $ vagrant up
 ```
 
-To use Ubuntu 24.04 instead:
+To use Ubuntu 22.04 instead:
 
 ```bash
 $ VM_BOX=ubuntu vagrant up
 ```
+
+Note: Vagrant box for 24.04 by Canonical is not supported anymore.
+https://portal.cloud.hashicorp.com/vagrant/discover?providers=libvirt&query=24.04
+
 
 ## Features
 
@@ -120,7 +124,21 @@ Because this playbook configures self-signed SSL certificates and by default the
 You can install the swift client anywhere that you have access to the SSL termination point and Keystone. So you could put it on your local laptop as well, probably with:
 
 ```bash
-$ pip install python-swiftclient
+# Fedora 42
+sudo dnf install python3-swiftclient
+
+# Ubuntu 22.04
+sudo apt-get install python3-swiftclient
+
+# PyPI:
+# Mixing installations from system package managers like dnf or apt with Python's pip
+# on virtual machines is strongly discouraged. This practice can lead to severe version
+# conflicts, broken dependencies, and unpredictable system behavior, making
+# troubleshooting extremely difficult. A virtual environment (virtualenv) should be used
+# when proceeding this way.
+python -m venv venv
+. ./venv/bin/activate
+pip install python-swiftclient
 ```
 
 However, I usually login to the package_cache server and use swift from there.

@@ -33,7 +33,7 @@ Swiftaucular provides, as part of its setup, a fully working out-of-the-box moni
 
 Swiftaucular includes the `run_with_monitor` script, which sets up the monitoring, and runs the deployment and workload tests while recording the monitored metrics.
 
-The script creates all the necessary VMs for the Swift deployment and the monitoring. It then starts the monitoring setup by calling the Ansible playbook `monitor_swift_cluster.yaml` to set up the Grafana instance and PCP configuration. The `monitor_swift_cluster.yaml` playbook uses PCP-Ansible to install PCP and Grafana ([PCP-Ansible GitHub Repository](https://github.com/performancecopilot/ansible-pcp)).
+The script creates all the necessary VMs for the Swift deployment and the monitoring. It then starts the monitoring setup by calling the Ansible playbook `setup-swift-monitoring.yml` to set up the Grafana instance and PCP configuration. The `setup-swift-monitoring.yml` playbook uses PCP-Ansible to install PCP and Grafana ([PCP-Ansible GitHub Repository](https://github.com/performancecopilot/ansible-pcp)).
 
 After the initial setup, the script creates the dashboards by calling a Python script located at `monitoring/grafana/configure_grafana.py`. URLs to the dashboards, containing live versions of the recorded metrics, will be printed out.
 
@@ -176,7 +176,7 @@ When adding a new PMDA, it's recommended to add it to the `monitoring/pdmas` dir
 
 ## Adding PDMA to the Deployment
 
-Once a new PMDA is implemented, it's easy to include it as part of the system. All that needs to be done is add an additional step to the `monitor_swift_cluster.yaml` playbook.
+Once a new PMDA is implemented, it's easy to include it as part of the system. All that needs to be done is add an additional step to the `setup-swift-monitoring.yml` playbook.
 
 
 

@@ -19,10 +19,21 @@ def create_pcp_datasource(client: GrafanaApi, name: str, ip: str):
         "editable": True
     }
     try:
+        # Check if datasource already exists
+        existing_datasources = client.datasource.list_datasources()
+        for ds in existing_datasources:
+            if ds.get('name') == name:
+                print(f"Datasource '{name}' already exists, updating instead...")
+                # Update existing datasource
+                client.datasource.update_datasource_by_uid(ds['uid'], datasource_config)
+                print("Datasource updated successfully")
+                return
+
+        # Create new datasource if it doesn't exist
         client.datasource.create_datasource(datasource_config)
         print("Datasource created successfully")
     except Exception as e:
-        print(f"Failed to create datasource: {e}")
+        print(f"Failed to create/update datasource: {e}")
         raise(e)
 
 # Delete default PCP datasource
