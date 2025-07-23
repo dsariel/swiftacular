@@ -24,10 +24,10 @@ ensure_user_exists() {
         echo "User $USERNAME already exists."
     else
         adduser "$USERNAME"
-        check_success "adduser $USERNAME"
+        check_success "!!"
 
         echo "swiftaucular" | passwd "$USERNAME" --stdin
-        check_success "setting password for user $USERNAME"
+        check_success "!!"
     fi
 }
 
@@ -36,32 +36,29 @@ post_install_common() {
     # Enabling pmcd/pmlogger services does. We could start them manually, but it's better
     # to spare the effort of managing logging, config, and monitoring, and instead rely on systemd.
     systemctl enable pmcd
-    check_success "systemctl enable pmcd"
+    check_success "!!"
     systemctl enable pmlogger
-    check_success "systemctl enable pmlogger"
+    check_success "!!"
     systemctl start pmcd
-    check_success "systemctl start pmcd"
+    check_success "!!"
     systemctl start pmlogger
-    check_success "systemctl start pmlogger"
+    check_success "!!"
 
 
     # Enable and start libvirt
     systemctl enable --now libvirtd
-    check_success "enable/start libvirtd"
+    check_success "!!"
 
     # Add user to libvirt group
     usermod -a -G libvirt "$USERNAME"
-    check_success "usermod -a -G libvirt $USERNAME"
+    check_success "!!"
 
     # Add vagrant boxes
     # this operation requires no sudo privilages
     # we need it at preparation stage to prevent
     # 'vagrant up' failure.
     ./vagrant_box.sh
-    check_success "run ./vagrant_box.sh"
-
-    pip install --upgrade --user ansible
-    check_success "pip install --upgrade --user ansible"
+    check_success "!!"
 
 }
 
@@ -76,17 +73,21 @@ install_for_fedora() {
                    zlib-devel \
                    ruby-devel \
                    rsync
-    check_success "dnf install packages"
+    ccheck_success "!!"
 
     # Install Vagrant
     dnf install -y vagrant
-    check_success "dnf install vagrant"
+    check_success "!!"
 
     dnf5 install -y @development-tools
-    check_success "dnf5 install @development-tools"
+    check_success "!!"
 
-    pip uninstall -y resolvelib
-    pip install --user resolvelib==0.5.5
+    # Install Ansible via dnf
+    dnf install -y ansible
+    check_success "!!"
+
+    # Required for ansible-galaxy later in bootstrap script
+    dnf install python3-resolvelib
 }
 
 install_for_ubuntu() {
@@ -109,18 +110,25 @@ install_for_ubuntu() {
         pkg-config \
         golang-go \
         pcp
+    check_success "!!"
 
-    check_success "apt install packages"
+    # https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+    apt install software-properties-common
+    check_success "!!"
+    add-apt-repository --yes --update ppa:ansible/ansible
+    check_success "!!"
+    apt install ansible
+    check_success "!!"
 
     grep -qxF 'export PATH=$HOME/.local/bin:$PATH' ~/.bashrc || echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
 
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
     sudo apt install ./vagrant_2.4.0-1_amd64.deb
-    check_success "apt install vagrant"
+    check_success "!!"
 
     # Avoid Permission denied ~/swiftacular/.vagrant/bundler error
     chown -R "$USER:$USER" .vagrant
-    check_success "chown -R ... .vagrant"
+    check_success "!!"
 }
 
 ensure_user_exists
