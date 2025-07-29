@@ -16,7 +16,7 @@
       ansible.builtin.git:
         repo: "https://github.com/google/jsonnet.git"
         dest: "{{ lookup('env', 'HOME') }}/jsonnet"
-        update: yes
+        update: true
 
     - name: Build jsonnet using make (non-root user)
       community.general.make:
@@ -26,7 +26,7 @@
       ansible.builtin.copy:
         src: "{{ lookup('env', 'HOME') }}/jsonnet/jsonnet"
         dest: "{{ lookup('env', 'HOME') }}/.local/bin/jsonnet"
-        mode: '0755'
+        mode: "0755"
 
     - name: Download and install jb (Jsonnet Bundler)
       ansible.builtin.get_url:
