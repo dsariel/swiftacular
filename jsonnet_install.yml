@@ -16,6 +16,7 @@
       ansible.builtin.git:
         repo: "https://github.com/google/jsonnet.git"
         dest: "{{ lookup('env', 'HOME') }}/jsonnet"
+        version: "7d1cbf8e69bc8b28e0405080771ccd4da36ac716"
         update: true
 
     - name: Build jsonnet using make (non-root user)
@@ -28,6 +29,7 @@
         dest: "{{ lookup('env', 'HOME') }}/.local/bin/jsonnet"
         mode: "0755"
 
+<<<<<<< HEAD
     - name: Download and install jb (Jsonnet Bundler)
       ansible.builtin.get_url:
         url: "https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/{{ jb_version }}/jb-linux-amd64"
@@ -36,15 +38,46 @@
 
     - name: Ensure ~/.local/bin is in the user's PATH
       ansible.builtin.blockinfile:
+=======
+    - name: Download jb binary
+      ansible.builtin.get_url:
+        url: https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.6.0/jb-linux-amd64
+        dest: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
+        mode: "0755"
+        force: false
+      register: download_result
+      retries: 5
+      delay: 15
+      until: download_result is succeeded
+
+    - name: Ensure jb binary is executable
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
+        mode: "0755"
+        owner: "{{ lookup('pipe', 'whoami') }}"
+        group: "{{ lookup('pipe', 'id -gn') }}"
+
+    - name: Ensure ~/.local/bin is in the user's PATH
+      ansible.builtin.lineinfile:
+>>>>>>> fb69444 (Remaining pre-commit fixes - those that can't be fixed automaticaly)
         path: "{{ lookup('env', 'HOME') }}/.bashrc"
         block: |
           export PATH="{{ lookup('env', 'HOME') }}/.local/bin:$PATH"
         state: present
 
     - name: Install jsonnet packages from jsonnetfile.json
+<<<<<<< HEAD
       ansible.builtin.command:
         cmd: jb install
       environment:
         PATH: "{{ lookup('env', 'HOME') }}/.local/bin:{{ lookup('env', 'PATH') }}"
       args:
         chdir: "{{ lookup('env', 'PWD') }}"
+=======
+      ansible.builtin.command: jb install
+      environment:
+        PATH: "{{ lookup('env', 'HOME') }}/.local/bin:{{ lookup('env', 'PATH') }}"
+      register: jb_result
+      changed_when: "'GET https' in jb_result.stdout and '200' in jb_result.stdout"
+      failed_when: jb_result.rc != 0
+>>>>>>> fb69444 (Remaining pre-commit fixes - those that can't be fixed automaticaly)
