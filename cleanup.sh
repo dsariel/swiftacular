@@ -2,6 +2,7 @@
 
 set -e
 
+export LIBVIRT_DEFAULT_URI="qemu:///system" # because we have libvirt.qemu_use_session = false in Vagrantfile
 
 virsh list --all
 
