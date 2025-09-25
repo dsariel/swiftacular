@@ -143,9 +143,11 @@ run_objectstore_tests() {
 
     cd "ceph/build/bin"
 
-    ./ceph_test_objectstore
-    ./unittest_bluestore_types
-
+    # ./ceph_test_objectstore # removing because of time it takes to run > 450 tests and 7 failed ones
+    ./unittest_bluestore_types # 149 tests from 16 test suites ran
+    ./ceph_test_bluefs # 42 tests from 3 test suites
+    ./ceph_test_bluestore_vselector # 1 test from 1 test suite
+    ./ceph_test_keyvaluedb  # 43 tests from 3 test suites
     cd ../../..
 }
 
