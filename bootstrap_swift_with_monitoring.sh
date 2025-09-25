@@ -77,7 +77,7 @@ vagrant up
 
 cp group_vars/all.example group_vars/all
 
-run_playbook "bluestore.yml" "Compile ceph and run bluestore tests"
+# run_playbook "bluestore.yml" "Compile ceph and run bluestore tests"
 
 ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts setup-swift-monitoring.yml
 

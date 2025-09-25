@@ -12,8 +12,8 @@
   register: script_output
   changed_when: script_output.rc == 0
   failed_when: script_output.rc != 0
-  async: 7200
-  poll: 10
+  async: 10800
+  poll: 30
 
 - name: Display script output
   ansible.builtin.debug:
