@@ -1,8 +1,8 @@
 ---
 - name: Install jsonnet and jb (Jsonnet Bundler) from source for a regular user
   hosts: localhost
-  become: no
-  gather_facts: no
+  become: false
+  gather_facts: false
   vars:
     jb_version: "v0.6.0"
   tasks:
@@ -10,7 +10,7 @@
       ansible.builtin.file:
         path: "{{ lookup('env', 'HOME') }}/.local/bin"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Clone jsonnet repository from GitHub into user's home directory
       ansible.builtin.git:
@@ -29,55 +29,26 @@
         dest: "{{ lookup('env', 'HOME') }}/.local/bin/jsonnet"
         mode: "0755"
 
-<<<<<<< HEAD
     - name: Download and install jb (Jsonnet Bundler)
       ansible.builtin.get_url:
         url: "https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/{{ jb_version }}/jb-linux-amd64"
         dest: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
-        mode: '0755'
+        mode: "0755"
 
     - name: Ensure ~/.local/bin is in the user's PATH
       ansible.builtin.blockinfile:
-=======
-    - name: Download jb binary
-      ansible.builtin.get_url:
-        url: https://github.com/jsonnet-bundler/jsonnet-bundler/releases/download/v0.6.0/jb-linux-amd64
-        dest: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
-        mode: "0755"
-        force: false
-      register: download_result
-      retries: 5
-      delay: 15
-      until: download_result is succeeded
-
-    - name: Ensure jb binary is executable
-      ansible.builtin.file:
-        path: "{{ lookup('env', 'HOME') }}/.local/bin/jb"
-        mode: "0755"
-        owner: "{{ lookup('pipe', 'whoami') }}"
-        group: "{{ lookup('pipe', 'id -gn') }}"
-
-    - name: Ensure ~/.local/bin is in the user's PATH
-      ansible.builtin.lineinfile:
->>>>>>> fb69444 (Remaining pre-commit fixes - those that can't be fixed automaticaly)
         path: "{{ lookup('env', 'HOME') }}/.bashrc"
         block: |
           export PATH="{{ lookup('env', 'HOME') }}/.local/bin:$PATH"
         state: present
 
     - name: Install jsonnet packages from jsonnetfile.json
-<<<<<<< HEAD
       ansible.builtin.command:
         cmd: jb install
       environment:
         PATH: "{{ lookup('env', 'HOME') }}/.local/bin:{{ lookup('env', 'PATH') }}"
       args:
         chdir: "{{ lookup('env', 'PWD') }}"
-=======
-      ansible.builtin.command: jb install
-      environment:
-        PATH: "{{ lookup('env', 'HOME') }}/.local/bin:{{ lookup('env', 'PATH') }}"
       register: jb_result
       changed_when: "'GET https' in jb_result.stdout and '200' in jb_result.stdout"
       failed_when: jb_result.rc != 0
->>>>>>> fb69444 (Remaining pre-commit fixes - those that can't be fixed automaticaly)
