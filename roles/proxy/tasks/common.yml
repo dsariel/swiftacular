@@ -1,28 +1,39 @@
 ---
-- name: start memcached
-  command: systemctl enable --now memcached
+- name: Start and enable memcached
+  ansible.builtin.systemd:
+    name: memcached
+    state: started
+    enabled: true
 
-- name: make sure memcached is running
-  service: name=memcached state=started
+- name: Ensure permissions on /var/cache/swift
+  ansible.builtin.file:
+    path: /var/cache/swift
+    state: directory
+    group: swift
+    owner: swift
+    mode: "0700"
 
-- name: ensure permissions on /var/cache/swift
-  file: path=/var/cache/swift state=directory group=swift owner=swift mode=0700
+- name: Copy over proxy-server.conf
+  ansible.builtin.template:
+    src: proxy-server.conf.j2
+    dest: /etc/swift/proxy-server.conf
+    owner: swift
+    group: swift
+    mode: "0640"
 
-# Note: Can't start the proxy yet
-- name: copy over proxy-server.conf
-  template: src=proxy-server.conf.j2 dest=/etc/swift/proxy-server.conf owner=swift group=swift mode=0640
+- name: Copy over object-expirer.conf
+  ansible.builtin.template:
+    src: object-expirer.conf.j2
+    dest: /etc/swift/object-expirer.conf
+    owner: swift
+    group: swift
+    mode: "0640"
 
-- name: copy over object-expirer.conf
-  template: src=object-expirer.conf.j2 dest=/etc/swift/object-expirer.conf owner=swift group=swift mode=0640
-
-#
-# Build rings
-# 
-
-- name: run swift-ring-builder for accounts, containers, and objects
-  command: swift-ring-builder {{ item }}.builder create {{ partition_power }} {{ replicas }} {{ min_part_hours }}  
-           chdir=/etc/swift 
-           creates=/etc/swift/{{ item }}.ring.gz 
+- name: Run swift-ring-builder for accounts, containers, and objects
+  ansible.builtin.command:
+    chdir: /etc/swift
+    creates: /etc/swift/{{ item }}.ring.gz
+    cmd: swift-ring-builder {{ item }}.builder create {{ partition_power }} {{ replicas }} {{ min_part_hours }}
   with_items:
     - account
     - container

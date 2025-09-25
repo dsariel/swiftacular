@@ -1,6 +1,27 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
+
+# Check for required commands
+for cmd in python vagrant ansible-playbook ansible-galaxy; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "$cmd could not be found. Please install it."
+    exit 1
+  fi
+done
+
+# install ansible collections before running tox
+ansible-galaxy collection install community.general --force
+ansible-galaxy collection install community.mysql --force
+# Explicitly get v2.3.0. ansible-galaxy collection install performancecopilot.metrics
+# installs lates 2.4.0 without redis roles.
+# TODO: install latest, address the issue.
+ansible-galaxy collection install git+https://github.com/performancecopilot/ansible-pcp.git,v2.3.0 --force
+ansible-galaxy collection install ansible.posix --force
+
+# Pre-commit checks
+tox
+
 
 # Array of dashboard JSON files and their UIDs
 declare -A dashboards
@@ -49,18 +70,6 @@ fi
 
 ./vagrant_box.sh
 
-# Install community.general module
-ansible-galaxy collection install community.general
-
-# Install community.mysql
-ansible-galaxy collection install community.mysql
-
-# Install performancecopilot.metrics collection
-# Explicitly get v2.3.0. ansible-galaxy collection install performancecopilot.metrics
-# installs lates 2.4.0 without redis roles.
-# TODO: install latest, address the issue.
-ansible-galaxy collection install git+https://github.com/performancecopilot/ansible-pcp.git,v2.3.0
-
 # Run the playbooks with timing and logging
 echo start
 vagrant up
@@ -68,11 +77,13 @@ vagrant up
 
 cp group_vars/all.example group_vars/all
 
+# run_playbook "bluestore.yml" "Compile ceph and run bluestore tests"
+
 ANSIBLE_CONFIG=ansible.cfg ANSIBLE_LIBRARY=library ansible-playbook -i hosts setup-swift-monitoring.yml
 
 # Install jsonnet on localhost
 ansible-playbook -i 'localhost,' -c local jsonnet_install.yml
- 
+
 
 # Iterate over dashboard pairs and create each dashboard
 for dashboard in "${!dashboards[@]}"; do
@@ -85,5 +96,3 @@ done
 run_playbook "deploy_swift_cluster.yml" "Deploy Swift Cluster"
 
 run_playbook "setup_workload_test.yml" "Setup Workload Test"
-
-

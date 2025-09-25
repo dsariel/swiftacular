@@ -8,6 +8,27 @@ fi
 
 USERNAME="stack"
 
+OS_ID=""
+VERSION_ID=""
+
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS_ID=${ID}
+    VERSION_ID=${VERSION_ID:-}
+elif [ -f /etc/lsb-release ]; then
+    . /etc/lsb-release
+    OS_ID=${DISTRIB_ID}
+    VERSION_ID=${DISTRIB_RELEASE:-}
+fi
+
+if [ -z "$OS_ID" ]; then
+    echo "Unsupported OS: Cannot determine distribution."
+    exit 1
+fi
+
+# normalize OS_ID to lowercase for case-insensitive matching
+OS_ID=$(echo "$OS_ID" | tr '[:upper:]' '[:lower:]')
+
 check_success() {
     if [ $? -ne 0 ]; then
         echo "Error: $1 failed."
@@ -23,11 +44,11 @@ ensure_user_exists() {
     if user_exists "$USERNAME"; then
         echo "User $USERNAME already exists."
     else
-        adduser "$USERNAME"
-        check_success "adduser $USERNAME"
+        useradd -m "$USERNAME"
+        check_success "!!"
 
-        echo "swiftaucular" | passwd "$USERNAME" --stdin
-        check_success "setting password for user $USERNAME"
+        echo "$USERNAME:swiftaucular" | chpasswd
+        check_success "!!"
     fi
 }
 
@@ -36,35 +57,29 @@ post_install_common() {
     # Enabling pmcd/pmlogger services does. We could start them manually, but it's better
     # to spare the effort of managing logging, config, and monitoring, and instead rely on systemd.
     systemctl enable pmcd
-    check_success "systemctl enable pmcd"
+    check_success "!!"
     systemctl enable pmlogger
-    check_success "systemctl enable pmlogger"
+    check_success "!!"
     systemctl start pmcd
-    check_success "systemctl start pmcd"
+    check_success "!!"
     systemctl start pmlogger
-    check_success "systemctl start pmlogger"
+    check_success "!!"
 
 
     # Enable and start libvirt
     systemctl enable --now libvirtd
-    check_success "enable/start libvirtd"
+    check_success "!!"
 
     # Add user to libvirt group
     usermod -a -G libvirt "$USERNAME"
-    check_success "usermod -a -G libvirt $USERNAME"
+    check_success "!!"
 
     # Add vagrant boxes
     # this operation requires no sudo privilages
     # we need it at preparation stage to prevent
     # 'vagrant up' failure.
     ./vagrant_box.sh
-    check_success "run ./vagrant_box.sh"
-
-    python3 -m pip install --upgrade pip --user
-    check_success "python3 -m pip install --upgrade pip --user"
-
-    pip install --upgrade --user ansible
-    check_success "pip install --upgrade --user ansible"
+    check_success "!!"
 
 }
 
@@ -79,22 +94,30 @@ install_for_fedora() {
                    zlib-devel \
                    ruby-devel \
                    rsync
-    check_success "dnf install packages"
+    check_success "!!"
 
     # Install Vagrant
     dnf install -y vagrant
-    check_success "dnf install vagrant"
+    check_success "!!"
 
     dnf5 install -y @development-tools
-    check_success "dnf5 install @development-tools"
+    check_success "!!"
 
-    pip uninstall -y resolvelib
-    pip install --user resolvelib==0.5.5
+    # Install Ansible via dnf
+    dnf install -y ansible
+    check_success "!!"
+
+    # Required for ansible-galaxy later in bootstrap script
+    dnf install python3-resolvelib
+    check_success "!!"
+
+    dnf install python3-tox
+    check_success "!!"
 }
 
 install_for_ubuntu() {
     apt-get update
-    check_success "apt-get update"
+    check_success "!!"
     apt-get install -y \
         qemu-kvm \
         libvirt-dev \
@@ -111,25 +134,65 @@ install_for_ubuntu() {
         software-properties-common \
         pkg-config \
         golang-go \
-        pcp
+        pcp \
+        wget
+    check_success "!!"
 
-    check_success "apt install packages"
+    # https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+    apt install software-properties-common
+    check_success "!!"
+    add-apt-repository --yes --update ppa:ansible/ansible
+    check_success "!!"
+    apt install -y ansible
+    check_success "!!"
+    apt  install python3-tox
+    check_success "!!"
 
     grep -qxF 'export PATH=$HOME/.local/bin:$PATH' ~/.bashrc || echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
 
     wget https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0-1_amd64.deb
-    sudo apt install ./vagrant_2.4.0-1_amd64.deb
-    check_success "apt install vagrant"
+    apt install ./vagrant_2.4.0-1_amd64.deb
+    check_success "!!"
 
     # Avoid Permission denied ~/swiftacular/.vagrant/bundler error
     chown -R "$USER:$USER" .vagrant
-    check_success "chown -R ... .vagrant"
+    check_success "!!"
+}
+
+install_for_arch() {
+    pacman -Syu --noconfirm
+    check_success "pacman -Syu"
+    pacman -S --noconfirm --needed \
+        qemu-desktop \
+        libvirt \
+        pcp \
+        libxml2 \
+        libxslt \
+        zlib \
+        ruby \
+        rsync \
+        base-devel \
+        ansible \
+        python-resolvelib \
+        go \
+        wget \
+        python-pip \
+        unzip \
+        git
+    check_success "!!"
+
+    if ! command -v vagrant &> /dev/null; then
+        echo "--------------------------------------------------------------------"
+        echo "Vagrant not found."
+        echo "Please install it as a regular user using an AUR helper like yay:"
+        echo "  yay -S vagrant"
+        echo "After installation, please re-run this script."
+        echo "--------------------------------------------------------------------"
+        exit 1
+    fi
 }
 
 ensure_user_exists
-
-OS_ID=$(grep -oP '^ID=\K.*' /etc/os-release | tr -d '"')
-VERSION_ID=$(grep -oP '^VERSION_ID=\K.*' /etc/os-release | tr -d '"')
 
 case "$OS_ID" in
   fedora)
@@ -146,8 +209,11 @@ case "$OS_ID" in
     fi
     install_for_ubuntu
     ;;
+  arch)
+    install_for_arch
+    ;;
   *)
-    echo "Unsupported OS: $OS_ID $VERSION_ID. Only Fedora 40 and Ubuntu 22.04 are supported."
+    echo "Unsupported OS: $OS_ID $VERSION_ID. Only Fedora 42, Ubuntu 22.04 and Arch are supported."
     exit 1
     ;;
 esac

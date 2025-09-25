@@ -1,5 +1,9 @@
 ---
+- name: Install package cache packages
+  ansible.builtin.include_tasks: debian_install.yml
 
-- include_tasks: debian_install.yml
-- include_tasks: debian_configure.yml
-- include_tasks: debian_service.yml
+- name: Configure package cache
+  ansible.builtin.include_tasks: debian_configure.yml
+
+- name: Manage package cache service
+  ansible.builtin.include_tasks: debian_service.yml

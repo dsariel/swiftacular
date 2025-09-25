@@ -1,127 +1,144 @@
 ---
-
-- hosts:
-  - all
-  gather_facts: yes
+- name: Install python3-libselinux on all hosts
+  hosts:
+    - all
+  gather_facts: true
   tasks:
-  - name: Install python3-libselinux
-    ansible.builtin.dnf:
-      name: python3-libselinux
-      state: present
+    - name: Install python3-libselinux
+      ansible.builtin.dnf:
+        name: python3-libselinux
+        state: present
 
-
-# Setup a package_cache, especially when using
-# your laptop and Vagrant
-#
-- hosts: all
+# setsebool -P swift_can_network 1
+- name: Configure SELinux for Swift
+  hosts: all
   tasks:
-    - name: let us port bind
-      command: setsebool -P swift_can_network 1
+    - name: Let us port bind
+      ansible.posix.seboolean:
+        name: swift_can_network
+        state: true
+        persistent: true
 
-- hosts: package_cache
+- name: Setup package cache
+  hosts: package_cache
   roles:
-  - package_cache
+    - package_cache
 
-- hosts:
-  - all
+- name: Apply common configuration
+  hosts:
+    - all
   roles:
-  - common
+    - common
 
-- hosts: all
+- name: Redirect ansible network interface names
+  hosts: all
   tasks:
-  - name: redirection ansible_ethN
-    set_fact:
-      ansible_eth1: "{{ ansible_ens6 }}"
-      ansible_eth2: "{{ ansible_ens7 }}"
-      ansible_eth3: "{{ ansible_ens8 }}"
-      ansible_eth4: "{{ ansible_ens9 }}"
+    - name: Redirection ansible_ethN
+      ansible.builtin.set_fact:
+        ansible_eth1: "{{ ansible_ens6 }}"
+        ansible_eth2: "{{ ansible_ens7 }}"
+        ansible_eth3: "{{ ansible_ens8 }}"
+        ansible_eth4: "{{ ansible_ens9 }}"
 
-# - hosts:
+# - name: Configure SSL load balancer
+#   hosts:
 #   - lbssl
 #   roles:
 #   - lbssl
 
-- hosts:
-  - proxy
-  - storage
-  - package_cache
+- name: Configure Swift common components
+  hosts:
+    - proxy
+    - storage
+    - package_cache
   roles:
     - swift_common
 
-- hosts: all
+- name: Redirect ansible network interface names (second time)
+  hosts: all
   tasks:
-  - name: redirection ansible_ethN twice
-    set_fact:
-      ansible_eth1: "{{ ansible_ens6 }}"
-      ansible_eth2: "{{ ansible_ens7 }}"
-      ansible_eth3: "{{ ansible_ens8 }}"
-      ansible_eth4: "{{ ansible_ens9 }}"
+    - name: Redirection ansible_ethN twice
+      ansible.builtin.set_fact:
+        ansible_eth1: "{{ ansible_ens6 }}"
+        ansible_eth2: "{{ ansible_ens7 }}"
+        ansible_eth3: "{{ ansible_ens8 }}"
+        ansible_eth4: "{{ ansible_ens9 }}"
 
-- hosts:
+- name: Configure Swift client
+  hosts:
     - swiftclient
   roles:
     - swiftclient
 
-- hosts:
-   - authentication
+- name: Configure authentication
+  hosts:
+    - authentication
   roles:
-   - authentication
+    - authentication
 
-- hosts:
-  - proxy
+- name: Configure proxy servers
+  hosts:
+    - proxy
   roles:
-  - proxy
+    - proxy
 
 #
 # I would have expected serial to work here, and
 # to be the right way to do it but at the time I
 # tried received "too many files open" errors.
 #
-- hosts: all
+- name: Redirect ansible network interface names (third time)
+  hosts: all
   tasks:
-  - name: redirection ansible_ethN again
-    set_fact:
-      ansible_eth1: "{{ ansible_ens6 }}"
-      ansible_eth2: "{{ ansible_ens7 }}"
-      ansible_eth3: "{{ ansible_ens8 }}"
-      ansible_eth4: "{{ ansible_ens9 }}"
+    - name: Redirection ansible_ethN again
+      ansible.builtin.set_fact:
+        ansible_eth1: "{{ ansible_ens6 }}"
+        ansible_eth2: "{{ ansible_ens7 }}"
+        ansible_eth3: "{{ ansible_ens8 }}"
+        ansible_eth4: "{{ ansible_ens9 }}"
 
-- hosts:
-  - storage
+- name: Configure storage servers
+  hosts:
+    - storage
   serial: 1
   roles:
-  - storage
+    - storage
 
 #
 # These are not so much roles as starting services
 # though also includes distributing the ring files.
 #
 
-- hosts:
-  - proxy
-#  vars_file:
-#  - include_tasks: vars/{{ansible_os_family}}.yml
+- name: Start proxy services
+  hosts:
+    - proxy
+  #  vars_file:
+  #  - include_tasks: vars/{{ansible_os_family}}.yml
   tasks:
-  - include_tasks: start_proxy.yml
+    - name: Include proxy startup tasks
+      ansible.builtin.include_tasks: start_proxy.yml
 
-- hosts:
-  - storage
-#  vars_file:
-#  - include_tasks: vars/{{ansible_os_family}}.yml
+- name: Start storage services
+  hosts:
+    - storage
+  #  vars_file:
+  #  - include_tasks: vars/{{ansible_os_family}}.yml
   tasks:
-  - include_tasks: start_storage.yml
+    - name: Include storage startup tasks
+      ansible.builtin.include_tasks: start_storage.yml
 
-- hosts:
-  - all
+- name: Restore SELinux enforcement
+  hosts:
+    - all
   tasks:
-  - name: restore selinux state
-    selinux:
-      policy: targeted
-      state: enforcing
-
+    - name: Restore selinux state
+      ansible.posix.selinux:
+        policy: targeted
+        state: enforcing
 
 #
 # Probably best to run these on their own?
 #
 
-#- include_tasks: tests/tests.yml
+# -  name: Run tests
+#    include_tasks: tests/tests.yml
